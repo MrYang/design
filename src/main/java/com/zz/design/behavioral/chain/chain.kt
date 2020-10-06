@@ -13,14 +13,8 @@ abstract class AbstractHandler : Handler {
     private var handler: Handler? = null
 
     override fun handleRequest(params: String) {
-        if (support()) {
-            doHandleRequest(params)
-        } else {
-            getNextHandler()?.handleRequest(params)
-        }
+        getNextHandler()?.handleRequest(params)
     }
-
-    abstract fun doHandleRequest(params: String)
 
     private fun getNextHandler(): Handler? {
         return handler
@@ -38,8 +32,12 @@ class Handler1(private val role: Int) : AbstractHandler() {
         return role == 1
     }
 
-    override fun doHandleRequest(params: String) {
-        println("$role handle request:$params")
+    override fun handleRequest(params: String) {
+        if (support()) {
+            println("$role handle request:$params")
+        } else {
+            super.handleRequest(params)
+        }
     }
 }
 
@@ -49,8 +47,12 @@ class Handler2(private val role: Int) : AbstractHandler() {
         return role == 2
     }
 
-    override fun doHandleRequest(params: String) {
-        println("$role handle request:$params")
+    override fun handleRequest(params: String) {
+        if (support()) {
+            println("$role handle request:$params")
+        } else {
+            super.handleRequest(params)
+        }
     }
 }
 
@@ -60,8 +62,12 @@ class Handler3(private val role: Int) : AbstractHandler() {
         return role == 3
     }
 
-    override fun doHandleRequest(params: String) {
-        println("$role handle request:$params")
+    override fun handleRequest(params: String) {
+        if (support()) {
+            println("$role handle request:$params")
+        } else {
+            super.handleRequest(params)
+        }
     }
 }
 
@@ -76,10 +82,6 @@ class Chain {
         return this
     }
 
-    fun handleRequest(params: String) {
-        handlers.forEach { h -> h.handleRequest(params) }
-    }
-
     fun firstHandleRequest(params: String) {
         if (handlers.isNotEmpty()) {
             handlers.first().handleRequest(params)
@@ -88,11 +90,10 @@ class Chain {
 }
 
 fun main() {
+    val role = 1
     val chain = Chain()
-            .addLast(Handler1(1))
-            .addLast(Handler2(2))
-            .addLast(Handler3(3))
-    chain.handleRequest("处理参数")
-
+            .addLast(Handler1(role))
+            .addLast(Handler2(role))
+            .addLast(Handler3(role))
     chain.firstHandleRequest("处理参数")
 }
